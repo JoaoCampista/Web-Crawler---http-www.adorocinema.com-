@@ -14,8 +14,13 @@ class MovieReviewSpider(scrapy.Spider):
             #yield scrapy.Request(links + '/criticas-adorocinema/', callback=self.cbb)
 
         page = int(response.xpath('/html/head/title/text()').get().split('Página ')[-1]) + 1
+
+        
         next_page = ('http://www.adorocinema.com/filmes/criticas-filmes/?page='+ str(page))
-        self.log(f"===========PÁGINA========== {page}")
+        
+        for i in range(50):
+            print("===========PÁGINA========== " + str(page))
+        
         yield scrapy.Request(next_page, callback=self.parse)
 
     #def cbb(self,response):
@@ -35,7 +40,9 @@ class MovieReviewSpider(scrapy.Spider):
         location = response.xpath('//*[contains(text(),"Nacionalidade")]/../span[2]/text()').get()
         year = response.xpath('//*[contains(text(),"Ano de produção")]/../span[2]/text()').get()
         date = response.xpath('string(//*[contains(@class,"date")]/text())').get()
-        runtime = response.xpath('string(//*[@id="content-layout"]/section/div/div[2]/div[1]/div/div[1])').get().split('\n')[19].split('                                            ')[1]
+        
+        runtime = response.xpath('string(//*[@id="content-layout"]/section/div/div[2]/div[1]/div/div[1])').get()
+        
         movie_type = response.xpath('//*[contains(text(),"Tipo de filme")]/../span[2]/text()').get()
         budget = response.xpath('//*[contains(text(),"Orçamento")]/../span[2]/text()').get()
         language = response.xpath('//*[contains(text(),"Idiomas")]/../span[2]/text()').get()
@@ -44,10 +51,9 @@ class MovieReviewSpider(scrapy.Spider):
         expert_rating = response.xpath('//*[@id="content-layout"]/section/div/div[2]/div[3]/div/div/div/span/text()').get()
         user_rating = response.xpath('//*[contains(@class, "stareval-note")]/text()').get()
 
-        synopsis = response.xpath('string(//*[contains(@class,"content-txt")])').get().split('\n                      ')[1].split('\n        \n            ')[0]
+        synopsis = response.xpath('string(//*[contains(@class,"content-txt")])').get()
 
-        genre_1 = response.xpath('string(//*[@id="content-layout"]/section/div/div[2]/div[1]/div/div[1])').get().split('\n                                                ')[7]
-        genre_2 = response.xpath('string(//*[@id="content-layout"]/section/div/div[2]/div[1]/div/div[1])').get().split('\n                                                ')[9].split('\n                                        \n                    \n                ')[0]
+        genre = response.xpath('string(//*[@id="content-layout"]/section/div/div[2]/div[1]/div/div[1])').get()
 
 
 
@@ -62,8 +68,7 @@ class MovieReviewSpider(scrapy.Spider):
                          'location':location,
                          'year':year,
                          'date':date,
-                         'genre_1':genre_1,
-                         'genre_2':genre_2,
+                         'genre':genre,
                          'runtime':runtime,
                          'movie_type':movie_type,
                          'budget':budget,
